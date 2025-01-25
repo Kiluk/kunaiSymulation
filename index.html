@@ -20,6 +20,10 @@
         <input type="number" id="angleInput" value="45" step="1">
         <button id="startSimulation">Rzuć Kunai!</button>
     </div>
+    <div style="text-align: center; margin: 20px;">
+        <p id="distanceFormula">Wzór: \( d = \frac{v^2 \cdot \sin(2\theta)}{g} \)</p>
+        <p id="distanceResult">Obliczona odległość: 0 m</p>
+    </div>    
     <canvas id="kunaiCanvas" width="1200" height="600"></canvas>
     <script src="kunai.js"></script>
 </body>

@@ -1,7 +1,7 @@
 const canvas = document.getElementById("kunaiCanvas");
 const ctx = canvas.getContext("2d");
 
-const gravity = 0.5; // Przyspieszenie grawitacyjne (piksele/klatkę^2)
+const gravity = 9.8; // Przyspieszenie grawitacyjne (m/s^2)
 let kunai = {
     x: 50,
     y: canvas.height - 50,
@@ -13,6 +13,18 @@ let kunai = {
 };
 
 let animationFrame; // Referencja do animacji
+let maxDistance = 0; // Maksymalna odległość
+
+function calculateDistance() {
+    // Oblicz odległość na podstawie wzoru d = (v^2 * sin(2*theta)) / g
+    const radianAngle = (kunai.angle * Math.PI) / 180; // Kąt w radianach
+    const sin2Theta = Math.sin(2 * radianAngle);
+    maxDistance = (Math.pow(kunai.speed, 2) * sin2Theta) / gravity;
+
+    // Zaktualizuj wynik w HTML
+    const distanceResult = document.getElementById("distanceResult");
+    distanceResult.textContent = `Obliczona odległość: ${maxDistance.toFixed(2)} m`;
+}
 
 function initKunai() {
     // Reset pozycji kunai
@@ -30,6 +42,8 @@ function initKunai() {
     const radianAngle = (kunai.angle * Math.PI) / 180; // Przekształcenie kąta na radiany
     kunai.vx = kunai.speed * Math.cos(radianAngle); // Składowa pozioma
     kunai.vy = -kunai.speed * Math.sin(radianAngle); // Składowa pionowa
+
+    calculateDistance(); // Oblicz odległość
 }
 
 function drawKunai() {
@@ -47,11 +61,19 @@ function drawKunai() {
     ctx.restore();
 }
 
+function drawDistance() {
+    ctx.save();
+    ctx.font = "20px Arial";
+    ctx.fillStyle = "red";
+    ctx.fillText(`Odległość: ${maxDistance.toFixed(2)} m`, 10, 30);
+    ctx.restore();
+}
+
 function updateKunai() {
     // Aktualizacja pozycji
     kunai.x += kunai.vx;
     kunai.y += kunai.vy;
-    kunai.vy += gravity; // Dodanie grawitacji
+    kunai.vy += gravity / 60; // Dodanie grawitacji (podzielone na klatki)
     kunai.rotation += 0.1; // Obroty kunai
 
     // Sprawdzenie kolizji z ziemią
@@ -64,6 +86,7 @@ function updateKunai() {
 function animate() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawKunai();
+    drawDistance();
     updateKunai();
 
     // Zatrzymanie animacji, gdy kunai zatrzyma się na ziemi
